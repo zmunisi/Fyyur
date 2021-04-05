@@ -148,14 +148,15 @@ def search_venues():
   search_term = request.form.get('search_term', '')
 
   venues = Venue.query.filter(Venue.name.ilike('%' + search_term + '%')).all()
-
+  shows = Show.query.filter_by(venue_id=venue_id).all()
+  
   venue_data = []
 
   for venue in venues:
     venue_data.append({
       "id": venue.id,
       "name": venue.name,
-      "num_upcoming_shows": 0, # does not have any functionality here, but follows same procedure as seen before
+      "num_upcoming_shows": len(upcomingShowsVenue(shows))
     })
 
   response = {
@@ -230,7 +231,6 @@ def create_venue_submission():
       seeking_talent = False
     seeking_description = request.form['seeking_description']
 
-
     venue = Venue(
       name=name,
       city=city,
@@ -246,7 +246,7 @@ def create_venue_submission():
 
     db.session.add(venue)
     db.session.commit()
-    # on successful db insert, flash success
+
     flash('Venue ' + request.form['name'] + ' was successfully listed!')
   except:
     flash('An error occurred. Venue ' + request.form['name'] + ' could not be listed.')
@@ -404,7 +404,7 @@ def edit_artist_submission(artist_id):
     artist_data.seeking_description = request.form['seeking_description']
 
     db.session.commit()
-    # on successful db insert, flash success
+
     flash('Artist ' + request.form['name'] + ' was successfully listed!')
   except:
     flash('An error occurred. Artist ' + request.form['name'] + ' could not be listed.')
@@ -523,7 +523,7 @@ def create_artist_submission():
 
     db.session.add(artist)
     db.session.commit()
-    # on successful db insert, flash success
+
     flash('Artist ' + request.form['name'] + ' was successfully listed!')
   except:
     flash('An error occurred. Artist ' + request.form['name'] + ' could not be listed.')
@@ -546,7 +546,6 @@ def create_artist_submission():
 @app.route('/shows')
 def shows():
   shows_data = []
-
   shows = Show.query.all()
 
   for show in shows:
@@ -566,7 +565,6 @@ def shows():
 
 @app.route('/shows/create')
 def create_shows():
-  # renders form. do not touch.
   form = ShowForm()
   return render_template('forms/new_show.html', form=form)
 
@@ -577,12 +575,11 @@ def create_show_submission():
     venue_id = request.form['venue_id']
     start_time = request.form['start_time']
 
-    show = Show(artist_id=artist_id, venue_id=venue_id,
-                start_time=start_time)
+    show = Show(artist_id=artist_id, venue_id=venue_id, start_time=start_time)
 
     db.session.add(show)
     db.session.commit()
-    # on successful db insert, flash success
+
     flash('Show was successfully listed!')
   except:
     db.session.rollback()
