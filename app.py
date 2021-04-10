@@ -20,7 +20,9 @@ from flask_migrate import Migrate
 from forms import (
     VenueForm,
     ArtistForm,
-    ShowForm
+    ShowForm,
+    SearchVenueForm,
+    SearchArtistForm
 )
 from flask_wtf.csrf import CSRFProtect
 from models import db, Venue, Artist, Show
@@ -84,7 +86,8 @@ def venues():
             } for venue in venues if
                 venue.city == place.city and venue.state == place.state]
         })
-    return render_template('pages/venues.html', areas=locals)
+    form = SearchVenueForm(meta={'csrf': True})
+    return render_template('pages/venues.html', areas=locals, form=form)
 
 
 @app.route('/venues/search', methods=['POST'])
@@ -108,8 +111,9 @@ def search_venues():
         "count": len(venues),
         "data": venue_data
     }
-
+    form = SearchVenueForm(meta={'csrf': True})
     return render_template('pages/search_venues.html', results=search,
+                           form=form,
                            search_term=request.form.get('search_term', ''))
 
 
@@ -164,8 +168,9 @@ def show_venue(venue_id):
     }
 
     venue_data.update(data)
-
-    return render_template('pages/show_venue.html', venue=venue_data)
+    form = SearchVenueForm(meta={'csrf': True})
+    return render_template('pages/show_venue.html', form=form,
+                           venue=venue_data)
 
 #  Create Venue
 #  ----------------------------------------------------------------
@@ -179,7 +184,7 @@ def create_venue_form():
 
 @app.route('/venues/create', methods=['POST'])
 def create_venue_submission():
-    form = VenueForm(request.form, meta={'csrf': False})
+    form = VenueForm(request.form, meta={'csrf': True})
     if form.validate():
         try:
             venue = Venue()
@@ -238,7 +243,9 @@ def artists():
             "name": artist.name
         })
 
-    return render_template('pages/artists.html', artists=artists_data)
+    form = SearchArtistForm(meta={'csrf': True})
+    return render_template('pages/artists.html', form=form,
+                           artists=artists_data)
 
 
 @app.route('/artists/search', methods=['POST'])
@@ -264,7 +271,8 @@ def search_artists():
         "data": artist_data
     }
 
-    return render_template('pages/search_artists.html',
+    form = SearchVenueForm(meta={'csrf': True})
+    return render_template('pages/search_artists.html', form=form,
                            results=search, search_term=request.form.get
                            ('search_term', ''))
 
@@ -319,8 +327,9 @@ def show_artist(artist_id):
     }
 
     artist_data.update(data)
-
-    return render_template('pages/show_artist.html', artist=artist_data)
+    form = SearchArtistForm(meta={'csrf': True})
+    return render_template('pages/show_artist.html', form=form,
+                           artist=artist_data)
 
 #  Update
 #  ----------------------------------------------------------------
@@ -338,7 +347,7 @@ def edit_artist(artist_id):
 @app.route('/artists/<int:artist_id>/edit', methods=['POST'])
 def edit_artist_submission(artist_id):
     artist = Artist.query.filter_by(id=artist_id).first_or_404()
-    form = ArtistForm(request.form, meta={'csrf': False})
+    form = ArtistForm(request.form, meta={'csrf': True})
     form.populate_obj(artist)
     if form.validate():
         try:
@@ -373,7 +382,7 @@ def edit_venue(venue_id):
 @app.route('/venues/<int:venue_id>/edit', methods=['POST'])
 def edit_venue_submission(venue_id):
     venue = Venue.query.filter_by(id=venue_id).first_or_404()
-    form = VenueForm(request.form, meta={'csrf': False})
+    form = VenueForm(request.form, meta={'csrf': True})
     form.populate_obj(venue)
     if form.validate():
         try:
@@ -407,7 +416,7 @@ def create_artist_form():
 
 @app.route('/artists/create', methods=['POST'])
 def create_artist_submission():
-    form = ArtistForm(request.form, meta={'csrf': False})
+    form = ArtistForm(request.form, meta={'csrf': True})
     if form.validate():
         try:
             artist = Artist()
