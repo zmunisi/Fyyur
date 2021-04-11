@@ -15,18 +15,6 @@ from enums import Genres, States
 import re
 
 
-class SearchVenueForm(Form):
-    search_term = StringField(
-        'search_term'
-    )
-
-
-class SearchArtistForm(Form):
-    search_term = StringField(
-        'search_term'
-    )
-
-
 class ShowForm(Form):
     artist_id = StringField(
         'artist_id'

@@ -3,6 +3,7 @@
 {% block content %}
 <h3>Number of search results for "{{ search_term }}": {{ results.count }}</h3>
 <ul class="items">
+	<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
 	{% for venue in results.data %}
 	<li>
 		<a href="/venues/{{ venue.id }}">

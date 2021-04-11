@@ -20,9 +20,7 @@ from flask_migrate import Migrate
 from forms import (
     VenueForm,
     ArtistForm,
-    ShowForm,
-    SearchVenueForm,
-    SearchArtistForm
+    ShowForm
 )
 from flask_wtf.csrf import CSRFProtect
 from models import db, Venue, Artist, Show
@@ -86,8 +84,7 @@ def venues():
             } for venue in venues if
                 venue.city == place.city and venue.state == place.state]
         })
-    form = SearchVenueForm(meta={'csrf': True})
-    return render_template('pages/venues.html', areas=locals, form=form)
+    return render_template('pages/venues.html', areas=locals)
 
 
 @app.route('/venues/search', methods=['POST'])
@@ -111,9 +108,7 @@ def search_venues():
         "count": len(venues),
         "data": venue_data
     }
-    form = SearchVenueForm(meta={'csrf': True})
     return render_template('pages/search_venues.html', results=search,
-                           form=form,
                            search_term=request.form.get('search_term', ''))
 
 
@@ -168,8 +163,7 @@ def show_venue(venue_id):
     }
 
     venue_data.update(data)
-    form = SearchVenueForm(meta={'csrf': True})
-    return render_template('pages/show_venue.html', form=form,
+    return render_template('pages/show_venue.html',
                            venue=venue_data)
 
 #  Create Venue
@@ -242,8 +236,7 @@ def artists():
             "name": artist.name
         })
 
-    form = SearchArtistForm(meta={'csrf': True})
-    return render_template('pages/artists.html', form=form,
+    return render_template('pages/artists.html',
                            artists=artists_data)
 
 
@@ -270,8 +263,7 @@ def search_artists():
         "data": artist_data
     }
 
-    form = SearchVenueForm(meta={'csrf': True})
-    return render_template('pages/search_artists.html', form=form,
+    return render_template('pages/search_artists.html',
                            results=search, search_term=request.form.get
                            ('search_term', ''))
 
@@ -326,8 +318,7 @@ def show_artist(artist_id):
     }
 
     artist_data.update(data)
-    form = SearchArtistForm(meta={'csrf': True})
-    return render_template('pages/show_artist.html', form=form,
+    return render_template('pages/show_artist.html',
                            artist=artist_data)
 
 #  Update
