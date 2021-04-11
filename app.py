@@ -214,7 +214,6 @@ def create_venue_submission():
 def delete_venue(venue_id):
     try:
         venue = Venue.query.get(venue_id)
-
         db.session.delete(venue)
         db.session.commit()
         flash('Venue ' + Venue.query.get(venue_id) +
